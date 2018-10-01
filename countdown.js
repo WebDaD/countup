@@ -1,20 +1,19 @@
 /* global $, URLSearchParams, moment */
 $(document).ready(function () {
-  // TODO: Params should be base64 encoded atob
   let urlParams = new URLSearchParams(window.location.search)
-  let type = urlParams.has('type') ? urlParams.get('type') : 'up' // down
-  let autostart = urlParams.has('autostart') ? urlParams.get('autostart') === 'true' : true // false
-  let realtime = urlParams.has('realtime') ? urlParams.get('realtime') === 'true' : true // false
-  let endtime = urlParams.has('endtime') ? urlParams.get('endtime') : '10:00:00' // time
-  let duration = urlParams.has('duration') ? urlParams.get('duration') : '300' // seconds
-  let background = urlParams.has('background') ? urlParams.get('background') : '#000000' // Color or image
-  let font = urlParams.has('font') ? urlParams.get('font') : 'Helvetica' // Font or Google Font
-  let fontcolor = urlParams.has('fontcolor') ? urlParams.get('fontcolor') : '#FFFFFF' // Color
-  let onTime = urlParams.has('onTime') ? urlParams.get('onTime') : 'stop' // continue
-  let afterTime = urlParams.has('afterTime') ? urlParams.get('afterTime') : 'nothing' // background | black
-  let format = urlParams.has('format') ? urlParams.get('format') : 'HH:mm:ss' // moment format
-  let branding = urlParams.has('branding') ? urlParams.get('branding') : '' // image
-  let brandingWhite = urlParams.has('brandingWhite') ? urlParams.get('brandingWhite') === 'true' : true // false
+  let type = urlParams.has('t') ? urlParams.get('t') : 'u' // u=up, d=down, c=clock
+  let autostart = urlParams.has('a') ? urlParams.get('a') === '1' : true // 1=true, 0=false
+  let realtime = urlParams.has('r') ? urlParams.get('r') === '1' : true // 1=true, 0=false
+  let endtime = urlParams.has('e') ? urlParams.get('e') : '10:00:00' // time
+  let duration = urlParams.has('d') ? urlParams.get('d') : '300' // seconds
+  let background = urlParams.has('b') ? urlParams.get('b') : '#000000' // Color or image
+  let font = urlParams.has('f') ? urlParams.get('f') : 'Helvetica' // Font or Google Font
+  let fontcolor = urlParams.has('c') ? urlParams.get('c') : '#FFFFFF' // Color
+  let onTime = urlParams.has('o') ? urlParams.get('o') : 's' // s=stop, c=continue
+  let afterTime = urlParams.has('x') ? urlParams.get('x') : 'n' // n=nothing, g=background, b=black
+  let format = urlParams.has('y') ? urlParams.get('y') : 'HH:mm:ss' // moment format
+  let branding = urlParams.has('l') ? urlParams.get('l') : '' // image
+  let brandingWhite = urlParams.has('w') ? urlParams.get('w') === '1' : true // 1=true, 0=false
 
   // Styling
   if (background.startsWith('#')) {
@@ -30,16 +29,32 @@ $(document).ready(function () {
   if (brandingWhite) {
     $('#branding').css('filter', 'grayscale(1) brightness(100)')
   }
+  // TODO: font
+
   // Timer
 
-  if (type === 'up') {
-    // Count up from start to end
+  if (type === 'u') { // Count up from start to end
+    if (realtime) { // Start Now from now upwards
+      timer(moment(), moment(endtime, format), format)
+    } else { // wait for starttime to arive
 
+    }
+    // if realtime > just count
+
+    // else if duration > start on specific time
   } else { // down
     // Count down from end to start
 
   }
-
-  let realend = moment(endtime, format)
-  let realstart
 })
+function timer (starttime, endtime, format) {
+  let now = moment()
+  // FIXME: now is after startime, is a new day!
+  if (now.isSameOrAfter(starttime) && now.isSameOrBefore(endtime)) {
+    $('#time').text(now.format(format))
+  }
+  // TODO: what to do onTime and afterTime
+  setTimeout(function () {
+    timer(starttime, endtime, format)
+  }, 1000)
+}
